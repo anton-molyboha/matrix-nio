@@ -447,14 +447,12 @@ class Schemas:
                 "properties": {
                     "events": {"type": "array"}
                 },
-                "required": ["events"]
             },
             "presence": {
                 "type": "object",
                 "properties": {
                     "events": {"type": "array"}
                 },
-                "required": ["events"]
             }
         },
         "required": [

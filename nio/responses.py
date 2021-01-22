@@ -1587,7 +1587,7 @@ class SyncResponse(Response):
     def _get_to_device(parsed_dict: Dict[Any, Any]):
         # type: (...) -> List[ToDeviceEvent]
         events: List[ToDeviceEvent] = []
-        for event_dict in parsed_dict["events"]:
+        for event_dict in parsed_dict.get("events", []):
             event = ToDeviceEvent.parse_event(event_dict)
 
             if event:
