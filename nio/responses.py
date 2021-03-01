@@ -1729,10 +1729,10 @@ class SyncResponse(Response):
         # type: (...) -> Union[SyncResponse, ErrorResponse]
         to_device = cls._get_to_device(parsed_dict["to_device"])
 
-        key_count_dict = parsed_dict["device_one_time_keys_count"]
+        key_count_dict = parsed_dict.get("device_one_time_keys_count", {})
         key_count = DeviceOneTimeKeyCount(
-            key_count_dict["curve25519"],
-            key_count_dict["signed_curve25519"]
+            key_count_dict.get("curve25519", 0),
+            key_count_dict.get("signed_curve25519", 0)
         )
 
         devices = DeviceList(

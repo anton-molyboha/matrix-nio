@@ -457,7 +457,6 @@ class Schemas:
         },
         "required": [
             "next_batch",
-            "device_one_time_keys_count",
             "rooms",
             "to_device",
         ],
