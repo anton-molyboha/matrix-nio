@@ -313,11 +313,10 @@ class Schemas:
     room_timeline = {
         "type": "object",
         "properties": {
-            "events": {"type": "array"},
+            "events": {"type": "array", "default": []},
             "limited": {"type": "boolean"},
             "prev_batch": {"type": "string"},
         },
-        "required": ["events", "limited", "prev_batch"],
     }
 
     sync = {
