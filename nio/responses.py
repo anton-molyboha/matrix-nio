@@ -161,6 +161,8 @@ def verify(schema, error_class, pass_arguments=True):
                 validate_json(parsed_dict, schema)
             except (SchemaError, ValidationError) as e:
                 logger.warn("Error validating response: " + str(e.message))
+                logger.debug("The json was:")
+                logger.debug(str(parsed_dict))
 
                 if pass_arguments:
                     return error_class.from_dict(parsed_dict, *args, **kwargs)
