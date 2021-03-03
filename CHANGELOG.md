@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.17.0 - 2021-03-01
+
+- [[#228]] Add support for global account data 
+- [[#222]] Add support for push rules events and API
+- [[#233]] Treat `device_lists` in `SyncResponse` as optional
+- [[#239]] Add support for authenticated `/profile` requests
+- [[#246]] Add support for SOCKS5 proxies
+
+[#228]: https://github.com/poljar/matrix-nio/pull/228
+[#222]: https://github.com/poljar/matrix-nio/pull/222
+[#233]: https://github.com/poljar/matrix-nio/pull/233
+[#239]: https://github.com/poljar/matrix-nio/pull/239
+[#246]: https://github.com/poljar/matrix-nio/pull/246
+
 ## 0.16.0 - 2021-01-18
 
 - [[#235]] Expose the whoami API endpoint in the AsyncClient.
@@ -39,8 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   full member list has been fetched for the room.
 
 [#216]: https://github.com/poljar/matrix-nio/pull/216
-[[ffc4228]]: https://github.com/poljar/matrix-nio/commit/ffc42287c22a1179a9be7d4e47555693417f715d
-[[c123e24]]: https://github.com/poljar/matrix-nio/commit/c123e24c8df81c55d40973470b825e78fd2f92a2
+[ffc4228]: https://github.com/poljar/matrix-nio/commit/ffc42287c22a1179a9be7d4e47555693417f715d
+[c123e24]: https://github.com/poljar/matrix-nio/commit/c123e24c8df81c55d40973470b825e78fd2f92a2
 
 ## 0.15.0 - 2020-08-21
 
