@@ -624,22 +624,25 @@ class RoomCreateEvent(Event):
             In spec v1.2 the following room types are specified:
                 - `m.space`
             Unspecified room types are permitted through the use of Namespaced Identifiers.
+        additional_creators (list):
+            List of additional creators of the room, for room versions 12 and higher.
 
     """
 
     federate: bool = True
     room_version: str = "1"
     room_type: str = ""
+    additional_creators: list[str] = field(default_factory=list)
 
     @classmethod
     @verify(Schemas.room_create)
     def from_dict(cls, parsed_dict: dict[Any, Any]) -> RoomCreateEvent | BadEventType:
         federate = parsed_dict["content"]["m.federate"]
         version = parsed_dict["content"]["room_version"]
-        if "type" in parsed_dict["content"]:
-            room_type = parsed_dict["content"]["type"]
+        room_type = parsed_dict["content"].get("type", "")
+        additional_creators = parsed_dict["content"].get("additional_creators", [])
 
-        return cls(parsed_dict, federate, version, room_type)
+        return cls(parsed_dict, federate, version, room_type, additional_creators)
 
 
 @dataclass

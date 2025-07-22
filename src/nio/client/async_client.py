@@ -2483,7 +2483,7 @@ class AsyncClient(Client):
                 ``m.room.power_levels`` event before it is sent to the room.
 
             predecessor (dict): A reference to the room this room replaces, if the previous room was upgraded.
-                Containing the event ID of the last known event in the old room.
+                Containing the event ID of the last known event in the old room (for room versions < 12).
                 And the ID of the old room.
                 ``event_id``: ``$something:example.org``,
                 ``room_id``: ``!oldroom:example.org``
@@ -3916,6 +3916,7 @@ class AsyncClient(Client):
         ],
         room_upgrade_message: str = "This room has been replaced",
         room_power_level_overwrite: dict[str, Any] | None = None,
+        include_predecessor_event_id: bool = True,
     ) -> RoomUpgradeResponse | RoomUpgradeError:
         """Upgrade an existing room.
 
@@ -3957,14 +3958,19 @@ class AsyncClient(Client):
             if event["type"] == "m.room.power_levels":
                 old_room_power_levels = event["content"]
 
-        # Get last known event from the old room
-        old_room_event = await self.room_messages(
-            start="", room_id=old_room_id, limit=1
-        )
-        if isinstance(old_room_event, RoomMessagesError):
-            return RoomUpgradeError("Failed to get last known event")
+        predecessor = {
+            "room_id": old_room_id,
+        }
 
-        old_room_last_event = old_room_event.chunk[0]
+        if include_predecessor_event_id:
+            # Get last known event from the old room
+            old_room_event = await self.room_messages(
+                start="", room_id=old_room_id, limit=1
+            )
+            if isinstance(old_room_event, RoomMessagesError):
+                return RoomUpgradeError("Failed to get last known event")
+
+            predecessor["event_id"] = old_room_event.chunk[0].event_id
 
         # Overwrite power level if a new power level was passed
         if room_power_level_overwrite is not None:
@@ -3975,10 +3981,7 @@ class AsyncClient(Client):
             room_version=new_room_version,
             power_level_override=old_room_power_levels,
             initial_state=new_room_initial_state,
-            predecessor={
-                "event_id": old_room_last_event.event_id,
-                "room_id": old_room_id,
-            },
+            predecessor=predecessor,
         )
 
         if isinstance(new_room, RoomCreateError):

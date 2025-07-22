@@ -94,6 +94,7 @@ class MatrixRoom:
         self.unread_highlights: int = 0
         self.members_synced: bool = False
         self.replacement_room: str | None = None
+        self.creators: set[str] = set()
         # yapf: enable
 
     @property
@@ -378,6 +379,7 @@ class MatrixRoom:
             self.federate = event.federate
             self.room_version = event.room_version
             self.room_type = event.room_type
+            self.creators = set(event.sender) | set(event.additional_creators)
 
         elif isinstance(event, RoomGuestAccessEvent):
             self.guest_access = event.guest_access
