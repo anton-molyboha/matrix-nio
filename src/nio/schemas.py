@@ -799,7 +799,10 @@ class Schemas:
                     "m.federate": {"type": "boolean", "default": True},
                     "room_version": {"type": "string", "default": "1"},
                     "type": {"type": "string", "default": ""},
-                    "additional_creators": {"type": "array", "items": {"type": "string"}},
+                    "additional_creators": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
                     "predecessor": {
                         "type": "object",
                         "properties": {
