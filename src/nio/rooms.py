@@ -97,6 +97,19 @@ class MatrixRoom:
         self.creators: set[str] = set()
         # yapf: enable
 
+    # TODO: where should this function go? It's also needed in AsyncClient.
+    @staticmethod
+    def _supports_room_version_12(room_version):
+        try:
+            return int(room_version) >= 12
+        except ValueError:
+            # TODO: what about other/unknown non-int room versions? Assume v1?
+            return room_version == "org.matrix.hydra.11"
+
+    @property
+    def supports_room_version_12(self):
+        return self._supports_room_version_12(self.room_version)
+
     @property
     def display_name(self) -> str:
         """Calculate display name for a room.
@@ -379,7 +392,10 @@ class MatrixRoom:
             self.federate = event.federate
             self.room_version = event.room_version
             self.room_type = event.room_type
-            self.creators = set(event.sender) | set(event.additional_creators)
+            if self.supports_room_version_12:
+                # < v12 can be considered equivalent to v12 with "no creators"
+                self.creators = set(event.sender) | set(event.additional_creators)
+                self.power_levels.creators = self.creators
 
         elif isinstance(event, RoomGuestAccessEvent):
             self.guest_access = event.guest_access

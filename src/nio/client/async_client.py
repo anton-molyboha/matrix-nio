@@ -3916,7 +3916,6 @@ class AsyncClient(Client):
         ],
         room_upgrade_message: str = "This room has been replaced",
         room_power_level_overwrite: dict[str, Any] | None = None,
-        include_predecessor_event_id: bool = True,
     ) -> RoomUpgradeResponse | RoomUpgradeError:
         """Upgrade an existing room.
 
@@ -3962,7 +3961,7 @@ class AsyncClient(Client):
             "room_id": old_room_id,
         }
 
-        if include_predecessor_event_id:
+        if not MatrixRoom._supports_room_version_12(new_room_version):
             # Get last known event from the old room
             old_room_event = await self.room_messages(
                 start="", room_id=old_room_id, limit=1
@@ -4056,6 +4055,12 @@ class AsyncClient(Client):
         self, room_id: str, event_name: str, event_type: str = "event"
     ) -> bool | ErrorResponse:
         who_am_i = await self.whoami()
+
+        # TODO: why does this function use whoami instead of self.user_id?
+        # Does that also mean that it shouldn't use self.creators?
+        if who_am_i.user_id in self.creators:
+            return True
+
         power_levels = await self.room_get_state_event(room_id, "m.room.power_levels")
 
         try:
@@ -4083,6 +4088,12 @@ class AsyncClient(Client):
         self, room_id: str, permission_type: str
     ) -> bool | ErrorResponse:
         who_am_i = await self.whoami()
+
+        # TODO: why does this function use whoami instead of self.user_id?
+        # Does that also mean that it shouldn't use self.creators?
+        if who_am_i.user_id in self.creators:
+            return True
+
         power_levels = await self.room_get_state_event(room_id, "m.room.power_levels")
 
         try:

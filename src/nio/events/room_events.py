@@ -1261,12 +1261,17 @@ class PowerLevels:
             from user_id to power level for that user.
         events (dict): The level required to send specific event types. This is
             a mapping from event type to power level required.
+        creators (set): The user_ids that created the room and should have
+            infinite power. This should be empty for room versions < 12.
 
     """
 
     defaults: DefaultLevels = field(default_factory=DefaultLevels)
     users: dict[str, int] = field(default_factory=dict)
     events: dict[str, int] = field(default_factory=dict)
+    # TODO: does it make sense to put a creators field here? It's not part of
+    # the event. But can_user_... will not be correct without it.
+    creators: set[str] = field(default_factory=set)
 
     def get_state_event_required_level(self, event_type: str) -> int:
         """Get required power level to send a certain type of state event.
@@ -1310,7 +1315,10 @@ class PowerLevels:
             user_id (str): The fully-qualified ID of the user for whom we would
                 like to get the power level.
         """
-        return self.users.get(user_id, self.defaults.users_default)
+        if user_id in self.creators:
+            return 2**53 + 1  # see MSC4289
+        else:
+            return self.users.get(user_id, self.defaults.users_default)
 
     def can_user_send_state(self, user_id: str, event_type: str) -> bool:
         """Return whether a user has enough power to send certain state events.
