@@ -3943,7 +3943,7 @@ class AsyncClient(Client):
                 ``m.room.power_levels`` event before it is sent to the room.
         """
         # Check if we are allowed to tombstone a room
-        if not await self.has_event_permission(old_room_id, "m.room.tombstone"):
+        if not await self.has_event_permission(old_room_id, "m.room.tombstone", "state"):
             return RoomUpgradeError("Not allowed to upgrade room")
 
         # Get state events for the old room
@@ -4064,7 +4064,7 @@ class AsyncClient(Client):
 
         # TODO: why does this function use whoami instead of self.user_id?
         # Does that also mean that it shouldn't use self.creators?
-        if who_am_i.user_id in self.creators:
+        if who_am_i.user_id in self.rooms[room_id].creators:
             return True
 
         power_levels = await self.room_get_state_event(room_id, "m.room.power_levels")
@@ -4072,20 +4072,20 @@ class AsyncClient(Client):
         try:
             user_power_level = power_levels.content["users"][who_am_i.user_id]
         except KeyError:
-            user_power_level = power_levels.content["users_default"]
-        else:
+            user_power_level = power_levels.content.get("users_default", 0)
+        except:
             return ErrorResponse("Couldn't get user power levels")
 
         try:
             event_power_level = power_levels.content["events"][event_name]
         except KeyError:
             if event_type == "event":
-                event_power_level = power_levels.content["events_default"]
+                event_power_level = power_levels.content.get("events_default", 0)
             elif event_type == "state":
-                event_power_level = power_levels.content["state_default"]
+                event_power_level = power_levels.content.get("state_default", 50)
             else:
                 return ErrorResponse(f"event_type {event_type} unknown")
-        else:
+        except:
             return ErrorResponse("Couldn't get event power levels")
 
         return user_power_level >= event_power_level
