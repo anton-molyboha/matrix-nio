@@ -142,13 +142,14 @@ from nio.api import (
 )
 from nio.client.async_client import connect_wrapper, on_request_chunk_sent
 from nio.crypto import OlmDevice, Session, decrypt_attachment
-from nio.responses import PublicRoom, PublicRoomsResponse
+from nio.responses import PublicRoom, PublicRoomsResponse, RoomUpgradeResponse
 
 BASE_URL_V1 = f"https://example.org{MATRIX_API_PATH_V1}"
 BASE_URL_V3 = f"https://example.org{MATRIX_API_PATH_V3}"
 BASE_MEDIA_URL = f"https://example.org{MATRIX_MEDIA_API_PATH}"
 BASE_LEGACY_MEDIA_URL = f"https://example.org{MATRIX_LEGACY_MEDIA_API_PATH}"
 TEST_ROOM_ID = "!testroom:example.org"
+TEST_ROOM_ID2 = "!testroom2:example.org"
 
 ALICE_ID = "@alice:example.org"
 ALICE_DEVICE_ID = "JLAFKJWSCS"
@@ -1619,6 +1620,103 @@ class TestClass:
             initial_state=[],
             power_level_override={},
             space=True,
+        )
+        assert isinstance(resp, RoomCreateResponse)
+        assert resp.room_id == TEST_ROOM_ID
+
+    async def test_room_create__predecessor_event_id(self, async_client, aioresponse):
+        def room_create_cb(url, data, **kwargs):
+            # TODO: Validate `data` completely?
+            if isinstance(data, bytes):
+                data = data.decode(encoding="utf-8")
+            if isinstance(data, str):
+                data = json.loads(data)
+            assert data.get("creation_content", {}).get("predecessor", {}).get("room_id", "") == TEST_ROOM_ID
+            assert data.get("creation_content", {}).get("predecessor", {}).get("event_id") == "event_id_1"
+            return CallbackResult(status=200, payload=self.room_id_response(TEST_ROOM_ID2))
+
+        aioresponse.post(
+            f"{BASE_URL_V3}/createRoom" "",
+            callback=room_create_cb
+        )
+
+        resp = await async_client.room_create(
+            visibility=RoomVisibility.public,
+            alias="foo",
+            name="bar",
+            topic="Foos and bars",
+            room_version="5",
+            preset=RoomPreset.trusted_private_chat,
+            invite={ALICE_ID},
+            initial_state=[],
+            power_level_override={},
+            predecessor={
+                "room_id": TEST_ROOM_ID,
+                "event_id": "event_id_1"
+            }
+        )
+        assert isinstance(resp, RoomCreateResponse)
+        assert resp.room_id == TEST_ROOM_ID2
+
+    async def test_room_create__predecessor_noevent_id(self, async_client, aioresponse):
+        def room_create_cb(url, data, **kwargs):
+            # TODO: Validate `data` completely?
+            if isinstance(data, bytes):
+                data = data.decode(encoding="utf-8")
+            if isinstance(data, str):
+                data = json.loads(data)
+            assert data.get("creation_content", {}).get("predecessor", {}).get("room_id", "") == TEST_ROOM_ID
+            assert data.get("creation_content", {}).get("predecessor", {}).get("event_id") is None
+            return CallbackResult(status=200, payload=self.room_id_response(TEST_ROOM_ID2))
+
+        aioresponse.post(
+            f"{BASE_URL_V3}/createRoom" "",
+            callback=room_create_cb
+        )
+
+        resp = await async_client.room_create(
+            visibility=RoomVisibility.public,
+            alias="foo",
+            name="bar",
+            topic="Foos and bars",
+            room_version="5",
+            preset=RoomPreset.trusted_private_chat,
+            invite={ALICE_ID},
+            initial_state=[],
+            power_level_override={},
+            predecessor={
+                "room_id": TEST_ROOM_ID
+            }
+        )
+        assert isinstance(resp, RoomCreateResponse)
+        assert resp.room_id == TEST_ROOM_ID2
+
+    async def test_room_create__additional_creators(self, async_client, aioresponse):
+        def room_create_cb(url, data, **kwargs):
+            # TODO: Validate `data` completely?
+            if isinstance(data, bytes):
+                data = data.decode(encoding="utf-8")
+            if isinstance(data, str):
+                data = json.loads(data)
+            assert data.get("creation_content", {}).get("additional_creators", []) == [ALICE_ID]
+            return CallbackResult(status=200, payload=self.room_id_response(TEST_ROOM_ID))
+
+        aioresponse.post(
+            f"{BASE_URL_V3}/createRoom" "",
+            callback=room_create_cb
+        )
+
+        resp = await async_client.room_create(
+            visibility=RoomVisibility.public,
+            alias="foo",
+            name="bar",
+            topic="Foos and bars",
+            room_version="5",
+            preset=RoomPreset.trusted_private_chat,
+            invite={ALICE_ID},
+            initial_state=[],
+            power_level_override={},
+            additional_creators=[ALICE_ID]
         )
         assert isinstance(resp, RoomCreateResponse)
         assert resp.room_id == TEST_ROOM_ID

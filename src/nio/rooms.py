@@ -394,7 +394,7 @@ class MatrixRoom:
             self.room_type = event.room_type
             if self.supports_room_version_12:
                 # < v12 can be considered equivalent to v12 with "no creators"
-                self.creators = set(event.sender) | set(event.additional_creators)
+                self.creators = {event.sender} | set(event.additional_creators)
                 self.power_levels.creators = self.creators
 
         elif isinstance(event, RoomGuestAccessEvent):

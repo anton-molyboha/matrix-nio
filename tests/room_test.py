@@ -430,6 +430,7 @@ class TestClass:
         )
         assert room.federate is False
         assert room.room_version == "1"
+        assert room.creators == {BOB_ID}
 
     def test_guest_access_event(self):
         room = self.test_room
