@@ -429,6 +429,7 @@ class MatrixRoom:
 
             # Update the power levels of the joined users
             for user_id, level in self.power_levels.users.items():
+                # TODO: What about room creators?
                 if user_id in self.users:
                     logger.info(
                         f"Changing power level for user {user_id} from {self.users[user_id].power_level} to {level}"

@@ -430,6 +430,25 @@ class TestClass:
         )
         assert room.federate is False
         assert room.room_version == "1"
+        assert room.creators == set()
+
+    def test_create_event__room_v12(self):
+        room = self.test_room
+        room.handle_event(
+            RoomCreateEvent.from_dict({
+                "event_id": "event_id",
+                "origin_server_ts": 0,
+                "sender": BOB_ID,
+                "state_key": "",
+                "type": "m.room.create",
+                "content": {
+                    "room_version": "12",
+                    "m.federate": False
+                }
+            })
+        )
+        assert room.federate is False
+        assert room.room_version == "12"
         assert room.creators == {BOB_ID}
 
     def test_guest_access_event(self):
