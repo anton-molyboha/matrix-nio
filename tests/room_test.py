@@ -454,17 +454,16 @@ class TestClass:
     def test_create_event__room_v12(self):
         room = self.test_room
         room.handle_event(
-            RoomCreateEvent.from_dict({
-                "event_id": "event_id",
-                "origin_server_ts": 0,
-                "sender": BOB_ID,
-                "state_key": "",
-                "type": "m.room.create",
-                "content": {
-                    "room_version": "12",
-                    "m.federate": False
+            RoomCreateEvent.from_dict(
+                {
+                    "event_id": "event_id",
+                    "origin_server_ts": 0,
+                    "sender": BOB_ID,
+                    "state_key": "",
+                    "type": "m.room.create",
+                    "content": {"room_version": "12", "m.federate": False},
                 }
-            })
+            )
         )
         assert room.federate is False
         assert room.room_version == "12"

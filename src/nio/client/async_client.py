@@ -3943,7 +3943,10 @@ class AsyncClient(Client):
                 ``m.room.power_levels`` event before it is sent to the room.
         """
         # Check if we are allowed to tombstone a room
-        if not await self.has_event_permission(old_room_id, "m.room.tombstone", "state"):
+        tombstone_permission = await self.has_event_permission(
+            old_room_id, "m.room.tombstone", "state"
+        )
+        if tombstone_permission is not True:
             return RoomUpgradeError("Not allowed to upgrade room")
 
         # Get state events for the old room
