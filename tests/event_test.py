@@ -99,6 +99,12 @@ class TestClass:
         assert isinstance(event, RoomCreateEvent)
         assert event.room_type == "nio.matrix.test"
 
+    def test_create_event_v12(self):
+        parsed_dict = TestClass._load_response("tests/data/events/create_v12.json")
+        event = RoomCreateEvent.from_dict(parsed_dict)
+        assert isinstance(event, RoomCreateEvent)
+        assert event.additional_creators == ["@bob:example.org"]
+
     def test_guest_access_event(self):
         parsed_dict = TestClass._load_response("tests/data/events/guest_access.json")
         event = RoomGuestAccessEvent.from_dict(parsed_dict)
