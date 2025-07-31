@@ -60,6 +60,25 @@ class TestClass:
         room = self.test_room
         assert room
 
+    def test_supports_room_version_12(self):
+        room = MatrixRoom(TEST_ROOM, BOB_ID)
+        room.room_version = "11"
+        assert room.supports_room_version_12 is False
+
+        room = MatrixRoom(TEST_ROOM, BOB_ID)
+        room.room_version = "12"
+        assert room.supports_room_version_12 is True
+
+        room = MatrixRoom(TEST_ROOM, BOB_ID)
+        room.room_version = "org.matrix.hydra.11"
+        assert room.supports_room_version_12 is True
+
+        # Not sure if this is the correct behavior.
+        # See comments in MatrixRoom.supports_room_version_12().
+        room = MatrixRoom(TEST_ROOM, BOB_ID)
+        room.room_version = "unknown_room_version"
+        assert room.supports_room_version_12 is False
+
     def test_adding_members(self):
         room = self.test_room
         assert not room.users
