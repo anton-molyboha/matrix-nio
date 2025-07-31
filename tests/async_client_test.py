@@ -144,7 +144,7 @@ from nio.api import (
 )
 from nio.client.async_client import connect_wrapper, on_request_chunk_sent
 from nio.crypto import OlmDevice, Session, decrypt_attachment
-from nio.responses import PublicRoom, PublicRoomsResponse, RoomUpgradeResponse
+from nio.responses import PublicRoom, PublicRoomsResponse
 
 BASE_URL_V1 = f"https://example.org{MATRIX_API_PATH_V1}"
 BASE_URL_V3 = f"https://example.org{MATRIX_API_PATH_V3}"
