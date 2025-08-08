@@ -3946,7 +3946,10 @@ class AsyncClient(Client):
         tombstone_permission = await self.has_event_permission(
             old_room_id, "m.room.tombstone", "state"
         )
-        if tombstone_permission is not True:
+        if (
+            not isinstance(tombstone_permission, ErrorResponse)
+            and not tombstone_permission
+        ):
             return RoomUpgradeError("Not allowed to upgrade room")
 
         # Get state events for the old room
@@ -4066,7 +4069,7 @@ class AsyncClient(Client):
         who_am_i = await self.whoami()
 
         # TODO: why does this function use whoami instead of self.user_id?
-        # Does that also mean that it shouldn't use self.creators?
+        # Does that also mean that it shouldn't use MatrixRoom.creators?
         if who_am_i.user_id in self.rooms[room_id].creators:
             return True
 
@@ -4100,7 +4103,7 @@ class AsyncClient(Client):
         who_am_i = await self.whoami()
 
         # TODO: why does this function use whoami instead of self.user_id?
-        # Does that also mean that it shouldn't use self.creators?
+        # Does that also mean that it shouldn't use MatrixRoom.creators?
         if who_am_i.user_id in self.rooms[room_id].creators:
             return True
 

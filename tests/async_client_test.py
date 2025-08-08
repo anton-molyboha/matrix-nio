@@ -152,6 +152,7 @@ BASE_MEDIA_URL = f"https://example.org{MATRIX_MEDIA_API_PATH}"
 BASE_LEGACY_MEDIA_URL = f"https://example.org{MATRIX_LEGACY_MEDIA_API_PATH}"
 TEST_ROOM_ID = "!testroom:example.org"
 TEST_ROOM_ID2 = "!testroom2:example.org"
+TEST_ROOM_ID_V12 = "$5hdALbO+xIhzcLTxCkspx5uqry9wO8322h/OI9ApnHE"
 
 ALICE_ID = "@alice:example.org"
 ALICE_DEVICE_ID = "JLAFKJWSCS"
@@ -1682,7 +1683,7 @@ class TestClass:
                 is None
             )
             return CallbackResult(
-                status=200, payload=self.room_id_response(TEST_ROOM_ID2)
+                status=200, payload=self.room_id_response(TEST_ROOM_ID_V12)
             )
 
         aioresponse.post(f"{BASE_URL_V3}/createRoom" "", callback=room_create_cb)
@@ -1692,7 +1693,7 @@ class TestClass:
             alias="foo",
             name="bar",
             topic="Foos and bars",
-            room_version="5",
+            room_version="12",
             preset=RoomPreset.trusted_private_chat,
             invite={ALICE_ID},
             initial_state=[],
@@ -1700,7 +1701,7 @@ class TestClass:
             predecessor={"room_id": TEST_ROOM_ID},
         )
         assert isinstance(resp, RoomCreateResponse)
-        assert resp.room_id == TEST_ROOM_ID2
+        assert resp.room_id == TEST_ROOM_ID_V12
 
     async def test_room_create__additional_creators(self, async_client, aioresponse):
         def room_create_cb(url, data, **kwargs):
@@ -1713,7 +1714,7 @@ class TestClass:
                 ALICE_ID
             ]
             return CallbackResult(
-                status=200, payload=self.room_id_response(TEST_ROOM_ID)
+                status=200, payload=self.room_id_response(TEST_ROOM_ID_V12)
             )
 
         aioresponse.post(f"{BASE_URL_V3}/createRoom" "", callback=room_create_cb)
@@ -1723,7 +1724,7 @@ class TestClass:
             alias="foo",
             name="bar",
             topic="Foos and bars",
-            room_version="5",
+            room_version="12",
             preset=RoomPreset.trusted_private_chat,
             invite={ALICE_ID},
             initial_state=[],
@@ -1731,7 +1732,7 @@ class TestClass:
             additional_creators=[ALICE_ID],
         )
         assert isinstance(resp, RoomCreateResponse)
-        assert resp.room_id == TEST_ROOM_ID
+        assert resp.room_id == TEST_ROOM_ID_V12
 
     async def test_join(self, async_client, aioresponse):
         aioresponse.post(
