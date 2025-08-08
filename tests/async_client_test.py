@@ -152,7 +152,7 @@ BASE_MEDIA_URL = f"https://example.org{MATRIX_MEDIA_API_PATH}"
 BASE_LEGACY_MEDIA_URL = f"https://example.org{MATRIX_LEGACY_MEDIA_API_PATH}"
 TEST_ROOM_ID = "!testroom:example.org"
 TEST_ROOM_ID2 = "!testroom2:example.org"
-TEST_ROOM_ID_V12 = "$5hdALbO+xIhzcLTxCkspx5uqry9wO8322h/OI9ApnHE"
+TEST_ROOM_ID_V12 = "!5hdALbO+xIhzcLTxCkspx5uqry9wO8322h/OI9ApnHE"
 
 ALICE_ID = "@alice:example.org"
 ALICE_DEVICE_ID = "JLAFKJWSCS"

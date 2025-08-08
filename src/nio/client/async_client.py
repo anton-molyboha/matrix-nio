@@ -3946,10 +3946,9 @@ class AsyncClient(Client):
         tombstone_permission = await self.has_event_permission(
             old_room_id, "m.room.tombstone", "state"
         )
-        if (
-            not isinstance(tombstone_permission, ErrorResponse)
-            and not tombstone_permission
-        ):
+        if isinstance(tombstone_permission, ErrorResponse):
+            return RoomUpgradeError("Could not determine if allowed to upgrade room")
+        if not tombstone_permission:
             return RoomUpgradeError("Not allowed to upgrade room")
 
         # Get state events for the old room
