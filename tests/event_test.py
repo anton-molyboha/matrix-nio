@@ -175,7 +175,7 @@ class TestClass:
 
         levels = event.power_levels
         creator = "@creator:localhost"
-        levels.creators.add(creator)
+        levels.creators[creator] = True
         admin = "@example:localhost"
         mod = "@alice:localhost"
         higher_user = "@carol:localhost"
