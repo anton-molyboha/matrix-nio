@@ -5052,6 +5052,7 @@ class TestClass:
         )
         # Expect a `createRoom` API call with the power levels that do not include the creator.
         room_create_called = asyncio.Event()
+
         def room_create_cb(url, data, **kwargs):
             # TODO: Validate `data` completely?
             if isinstance(data, bytes):
@@ -5078,5 +5079,5 @@ class TestClass:
             repeat=False
         )
 
-        response = await async_client.room_upgrade(TEST_ROOM_ID, "12")
+        await async_client.room_upgrade(TEST_ROOM_ID, "12")
         assert room_create_called.is_set()
