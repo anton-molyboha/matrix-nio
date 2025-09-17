@@ -4011,6 +4011,11 @@ class AsyncClient(Client):
 
             predecessor["event_id"] = old_room_event.chunk[0].event_id
 
+        if MatrixRoom._supports_room_version_12(new_room_version):
+            who_am_i = await self.whoami()
+            if who_am_i.user_id in old_room_power_levels["users"]:
+                del old_room_power_levels["users"][who_am_i.user_id]
+
         # Overwrite power level if a new power level was passed
         if room_power_level_overwrite is not None:
             old_room_power_levels = room_power_level_overwrite
